@@ -1,12 +1,13 @@
-
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { motion, AnimatePresence } from "framer-motion";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { Mail, Lock, UserPlus, LogIn, X } from "lucide-react";
 
 interface AuthDialogProps {
   isOpen: boolean;
@@ -81,98 +82,181 @@ const AuthDialog = ({ isOpen, onClose }: AuthDialogProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-slate-800 border-red-900/20">
+      <DialogContent className="sm:max-w-md bg-black/40 backdrop-blur-xl border border-white/20 shadow-2xl">
+        <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+          <X className="h-4 w-4 text-white" />
+          <span className="sr-only">Close</span>
+        </DialogClose>
+
         <DialogHeader>
-          <DialogTitle className="text-white text-2xl text-center">Join ARMWATCH</DialogTitle>
+          <DialogTitle className="text-3xl font-bold text-center bg-gradient-to-r from-red-500 to-orange-500 text-transparent bg-clip-text">
+            Join ARMWATCH
+          </DialogTitle>
         </DialogHeader>
         
         <Tabs defaultValue="signin" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-slate-700">
-            <TabsTrigger value="signin" className="text-white data-[state=active]:bg-red-600">
+          <TabsList className="grid w-full grid-cols-2 bg-white/5 backdrop-blur-sm border border-white/10 p-1 rounded-lg">
+            <TabsTrigger 
+              value="signin" 
+              className="text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-orange-600 data-[state=active]:text-white rounded-md transition-all duration-300"
+            >
+              <LogIn className="w-4 h-4 mr-2" />
               Sign In
             </TabsTrigger>
-            <TabsTrigger value="signup" className="text-white data-[state=active]:bg-red-600">
+            <TabsTrigger 
+              value="signup" 
+              className="text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-orange-600 data-[state=active]:text-white rounded-md transition-all duration-300"
+            >
+              <UserPlus className="w-4 h-4 mr-2" />
               Sign Up
             </TabsTrigger>
           </TabsList>
           
           <TabsContent value="signin" className="space-y-4 mt-6">
-            <form onSubmit={handleSignIn} className="space-y-4">
-              <div>
-                <Label htmlFor="signin-email" className="text-gray-300">Email</Label>
+            <motion.form 
+              onSubmit={handleSignIn} 
+              className="space-y-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="space-y-2">
+                <Label htmlFor="signin-email" className="text-white/80 flex items-center gap-2">
+                  <Mail className="w-4 h-4" />
+                  Email
+                </Label>
                 <Input
                   id="signin-email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="bg-slate-700 border-slate-600 text-white"
+                  className="bg-white/5 border-white/10 text-white placeholder:text-white/50 focus:border-red-500/50 focus:ring-red-500/20"
+                  placeholder="Enter your email"
                 />
               </div>
-              <div>
-                <Label htmlFor="signin-password" className="text-gray-300">Password</Label>
+              <div className="space-y-2">
+                <Label htmlFor="signin-password" className="text-white/80 flex items-center gap-2">
+                  <Lock className="w-4 h-4" />
+                  Password
+                </Label>
                 <Input
                   id="signin-password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="bg-slate-700 border-slate-600 text-white"
+                  className="bg-white/5 border-white/10 text-white placeholder:text-white/50 focus:border-red-500/50 focus:ring-red-500/20"
+                  placeholder="Enter your password"
                 />
               </div>
-              <Button
-                type="submit"
-                className="w-full bg-red-600 hover:bg-red-700"
-                disabled={isLoading}
-              >
-                {isLoading ? "Signing In..." : "Sign In"}
-              </Button>
-            </form>
+              <div className="flex gap-3">
+                <Button
+                  type="submit"
+                  className="flex-1 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-semibold py-6 transition-all duration-300"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full"
+                    />
+                  ) : (
+                    "Sign In"
+                  )}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onClose}
+                  className="flex-1 bg-white/5 border-white/10 text-white hover:bg-white/10 font-semibold py-6 transition-all duration-300"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </motion.form>
           </TabsContent>
           
           <TabsContent value="signup" className="space-y-4 mt-6">
-            <form onSubmit={handleSignUp} className="space-y-4">
-              <div>
-                <Label htmlFor="signup-email" className="text-gray-300">Email</Label>
+            <motion.form 
+              onSubmit={handleSignUp} 
+              className="space-y-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="space-y-2">
+                <Label htmlFor="signup-email" className="text-white/80 flex items-center gap-2">
+                  <Mail className="w-4 h-4" />
+                  Email
+                </Label>
                 <Input
                   id="signup-email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="bg-slate-700 border-slate-600 text-white"
+                  className="bg-white/5 border-white/10 text-white placeholder:text-white/50 focus:border-red-500/50 focus:ring-red-500/20"
+                  placeholder="Enter your email"
                 />
               </div>
-              <div>
-                <Label htmlFor="signup-password" className="text-gray-300">Password</Label>
+              <div className="space-y-2">
+                <Label htmlFor="signup-password" className="text-white/80 flex items-center gap-2">
+                  <Lock className="w-4 h-4" />
+                  Password
+                </Label>
                 <Input
                   id="signup-password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="bg-slate-700 border-slate-600 text-white"
+                  className="bg-white/5 border-white/10 text-white placeholder:text-white/50 focus:border-red-500/50 focus:ring-red-500/20"
+                  placeholder="Create a password"
                 />
               </div>
-              <div>
-                <Label htmlFor="confirm-password" className="text-gray-300">Confirm Password</Label>
+              <div className="space-y-2">
+                <Label htmlFor="confirm-password" className="text-white/80 flex items-center gap-2">
+                  <Lock className="w-4 h-4" />
+                  Confirm Password
+                </Label>
                 <Input
                   id="confirm-password"
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  className="bg-slate-700 border-slate-600 text-white"
+                  className="bg-white/5 border-white/10 text-white placeholder:text-white/50 focus:border-red-500/50 focus:ring-red-500/20"
+                  placeholder="Confirm your password"
                 />
               </div>
-              <Button
-                type="submit"
-                className="w-full bg-red-600 hover:bg-red-700"
-                disabled={isLoading}
-              >
-                {isLoading ? "Creating Account..." : "Create Account"}
-              </Button>
-            </form>
+              <div className="flex gap-3">
+                <Button
+                  type="submit"
+                  className="flex-1 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-semibold py-6 transition-all duration-300"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full"
+                    />
+                  ) : (
+                    "Create Account"
+                  )}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onClose}
+                  className="flex-1 bg-white/5 border-white/10 text-white hover:bg-white/10 font-semibold py-6 transition-all duration-300"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </motion.form>
           </TabsContent>
         </Tabs>
         

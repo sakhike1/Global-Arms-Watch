@@ -7,6 +7,8 @@ import PeaceSection from "@/components/PeaceSection";
 import WarAnalysis from "@/components/WarAnalysis";
 import Donate from "@/components/Donate";
 import Footer from "@/components/Footer";
+import ContactAndBanking from "@/components/ContactAndBanking";
+
 
 const Index = () => {
   return (
@@ -19,6 +21,7 @@ const Index = () => {
       <PeaceSection />
       <WarAnalysis />
       <Donate />
+      <ContactAndBanking />
       <Footer />
     </div>
   );
